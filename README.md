@@ -75,11 +75,31 @@ Chartix issues **no API keys**. The credential is a login JWT from
 `POST /api/auth/login`, and it expires.
 
 ```bash
-export CHARTIX_TOKEN="$(curl -s -X POST https://api.chartixai.com/api/auth/login \
-  -H 'Content-Type: application/json' \
-  -d '{"email":"you@example.com","password":"..."}' \
-  | python3 -c 'import sys,json;print(json.load(sys.stdin)["access_token"])')"
+read -r  -p "Chartix email: "    CX_EMAIL
+read -r -s -p "Chartix password: " CX_PW; echo
+export CHARTIX_TOKEN="$(
+  CX_EMAIL="$CX_EMAIL" CX_PW="$CX_PW" python3 -c '
+import json, os, urllib.request, sys
+body = json.dumps({"email": os.environ["CX_EMAIL"], "password": os.environ["CX_PW"]}).encode()
+req = urllib.request.Request("https://api.chartixai.com/api/auth/login", body,
+                             {"Content-Type": "application/json"})
+try:
+    d = json.load(urllib.request.urlopen(req))
+except urllib.error.HTTPError as e:
+    d = json.load(e)
+except Exception as e:
+    sys.exit("login failed: %s" % e)
+t = d.get("access_token")
+if not t:
+    sys.exit("login failed: " + json.dumps(d.get("detail", d))[:200])
+print(t)')"
+unset CX_PW
 ```
+
+The password is read with `-s`, so it is not echoed and does not land in your
+shell history. A bad login prints `login failed: ...` and sets nothing — an
+earlier version of this snippet died with `KeyError: 'access_token'`, which
+told you nothing about why.
 
 That token carries your **full account authority, writes included** — adding
 watchlist entries and creating alerts are among the nine tools. Treat it as a
