@@ -45,34 +45,24 @@ plugins do and the key is not in their schema. The server therefore reads
 `CHARTIX_TOKEN` from the environment it is **spawned in** — which is
 Quantcept's own process. Export it before you start Quantcept:
 
+Two lines, each self-contained — a multi-line block with embedded quotes gets
+mangled when a shell takes it a line at a time (`zsh: parse error near ')'`):
+
 ```bash
-# `read -p` is a bashism — in zsh, -p means "read from a coprocess" and this
-# fails with `read: -p: no coprocess`. printf works in both.
-printf 'Chartix email: '    ; read -r  CX_EMAIL
-printf 'Chartix password: ' ; read -rs CX_PW ; echo
-export CHARTIX_TOKEN="$(
-  CX_EMAIL="$CX_EMAIL" CX_PW="$CX_PW" python3 -c '
-import json, os, urllib.request, sys
-body = json.dumps({"email": os.environ["CX_EMAIL"], "password": os.environ["CX_PW"]}).encode()
-req = urllib.request.Request("https://api.chartixai.com/api/auth/login", body,
-                             {"Content-Type": "application/json"})
-try:
-    d = json.load(urllib.request.urlopen(req))
-except urllib.error.HTTPError as e:
-    d = json.load(e)
-except Exception as e:
-    sys.exit("login failed: %s" % e)
-t = d.get("access_token")
-if not t:
-    sys.exit("login failed: " + json.dumps(d.get("detail", d))[:200])
-print(t)')"
-unset CX_PW
+printf 'Chartix email: ' ; read -r CX_E ; printf 'Chartix password: ' ; read -rs CX_P ; echo
+export CHARTIX_TOKEN="$(curl -s -X POST https://api.chartixai.com/api/auth/login -H 'Content-Type: application/json' -d "$(CX_E="$CX_E" CX_P="$CX_P" python3 -c 'import json,os;print(json.dumps({"email":os.environ["CX_E"],"password":os.environ["CX_P"]}))')" | python3 -c 'import sys,json;d=json.load(sys.stdin);t=d.get("access_token");print(t) if t else sys.exit("login failed: "+json.dumps(d.get("detail",d))[:200])')" ; unset CX_P
 ```
 
-The password is read with `-s`, so it is not echoed and does not land in your
-shell history. A bad login prints `login failed: ...` and sets nothing — an
-earlier version of this snippet died with `KeyError: 'access_token'`, which
-told you nothing about why.
+Check it took:
+
+```bash
+echo "${CHARTIX_TOKEN:+token set, ${#CHARTIX_TOKEN} chars}"
+```
+
+`read -rs` keeps the password off the screen and out of shell history. A bad
+login prints `login failed: <the API's own reason>` and leaves the variable
+empty, rather than setting it to an error message. Verified in zsh and bash —
+note `read -p` is a bashism and fails in zsh with `-p: no coprocess`.
 
 Chartix issues no API keys — the credential is a JWT from `POST /api/auth/login`,
 and it expires. Without it every tool returns a typed `CHARTIX_AUTH_FAILED`
