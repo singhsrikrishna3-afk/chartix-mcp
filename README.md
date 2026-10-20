@@ -75,8 +75,10 @@ Chartix issues **no API keys**. The credential is a login JWT from
 `POST /api/auth/login`, and it expires.
 
 ```bash
-read -r  -p "Chartix email: "    CX_EMAIL
-read -r -s -p "Chartix password: " CX_PW; echo
+# `read -p` is a bashism — in zsh, -p means "read from a coprocess" and this
+# fails with `read: -p: no coprocess`. printf works in both.
+printf 'Chartix email: '    ; read -r  CX_EMAIL
+printf 'Chartix password: ' ; read -rs CX_PW ; echo
 export CHARTIX_TOKEN="$(
   CX_EMAIL="$CX_EMAIL" CX_PW="$CX_PW" python3 -c '
 import json, os, urllib.request, sys
