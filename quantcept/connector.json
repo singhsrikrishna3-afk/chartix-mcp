@@ -1,0 +1,17 @@
+{
+  "name": "Chartix (NSE technical analysis)",
+  "description": "NSE charting, chart patterns with Chartix's own backtested win rates, scans, watchlists and chart deep links. End-of-day and intraday bars for 3,017 NSE equities.",
+  "mcp_server_url": "https://REPLACE-ME.example.com/",
+  "transport": "streamable_http",
+  "auth": {
+    "type": "header",
+    "header_name": "Authorization",
+    "header_value": "Bearer REPLACE-ME"
+  },
+  "_notes": {
+    "mcp_server_url": "Must be a public https URL \u2014 Quantcept's website connectors refuse localhost. For local use, skip this file and point the Quantcept terminal's /mcp at http://127.0.0.1:8420/ instead.",
+    "auth": "This protects the MCP SERVER, not Chartix. It is not the Chartix credential: that lives in the server's own CHARTIX_TOKEN env var and must never be sent from Quantcept. If the server runs on loopback only, set \"auth\": {\"type\": \"none\"}.",
+    "before_exposing_this": "The server holds a Chartix login JWT with that user's full authority, writes included \u2014 anyone who can reach an exposed instance acts as that user. Paid data is separately gated at the API (intraday requires eod_pro server-side). Read chartix-mcp-server/README.md 'Hosting' before putting this on a public URL.",
+    "plan": "Website connectors and custom skills need a Quantcept Alpha or Apex 30-day pass. Both are paused, not deleted, when a pass ends."
+  }
+}

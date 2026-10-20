@@ -1,0 +1,32 @@
+{
+  "_comment": [
+    "Alias table as DATA, not code branches (§8). Chartix's canonical id is the",
+    "NSE ticker in upper case; these are the other spellings the same instrument",
+    "arrives as, from Yahoo exports, TradingView, broker statements and other",
+    "terminals. Add rows here rather than adding cases to a resolver.",
+    "",
+    "Only non-derivable aliases belong here. NSE:RELIANCE and RELIANCE.NS are",
+    "handled by the exchange-qualified and Yahoo-style rules in symbols.ts and",
+    "would be 3,000 pointless rows.",
+    "",
+    "Every target here was resolved against the live universe on 16 Oct 2026. VIX/INDIAVIX -> INDIA_VIX was removed: that symbol is absent from instruments entirely, and /eod answers 200 with zero bars rather than 404, so the alias looked plausible and resolved to nothing. Verify a target before adding it."
+  ],
+  "aliases": {
+    "NIFTY": "NIFTY_50",
+    "NIFTY50": "NIFTY_50",
+    "NIFTY 50": "NIFTY_50",
+    "^NSEI": "NIFTY_50",
+    "NSEI": "NIFTY_50",
+    "BANKNIFTY": "NIFTY_BANK",
+    "NIFTYBANK": "NIFTY_BANK",
+    "NIFTY BANK": "NIFTY_BANK",
+    "^NSEBANK": "NIFTY_BANK",
+    "M&M.NS": "M&M",
+    "MM": "M&M",
+    "BAJAJAUTO": "BAJAJ-AUTO",
+    "BAJAJ AUTO": "BAJAJ-AUTO"
+  },
+  "renamed": {
+    "_comment": "EMPTY ON PURPOSE. §9 wants CHARTIX_SYMBOL_CHANGED with the replacement rather than a short series, and the mechanism is built and tested — but it is fed by verified rows only. MINDTREE/LTI -> LTIM was removed on 16 Oct 2026: LTIM is in Chartix as is_active=0 with 5 bars ending 2024-07-29, and MINDTREE and LTI are absent entirely, so the mapping would have redirected a user to a dead symbol. Chartix has no usable data for that instrument under any spelling, which is a different answer from 'it was renamed'. Add a row only after checking the target is active and has current bars."
+  }
+}

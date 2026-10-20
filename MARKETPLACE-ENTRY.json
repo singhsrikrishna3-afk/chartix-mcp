@@ -1,0 +1,12 @@
+{
+  "_comment": "Paste this object into the `plugins` array of quantcept-marketplace.json in a PR to Fincept-Corporation/quantcept-marketplace, then run: node scripts/validate.mjs quantcept-marketplace.json",
+  "name": "chartix",
+  "source": {
+    "source": "git-subdir",
+    "url": "https://github.com/singhsrikrishna3-afk/chartix-mcp.git",
+    "path": "quantcept-plugin"
+  },
+  "description": "NSE price action from ChartixAI: OHLCV bars, detected chart patterns with Chartix's own backtested win rates, screener runs, watchlists and alerts, as nine MCP tools plus a skill on keeping Chartix and Quantcept attribution apart.",
+  "category": "data",
+  "tags": ["mcp", "nse", "india", "equities", "charts", "patterns", "screener"]
+}

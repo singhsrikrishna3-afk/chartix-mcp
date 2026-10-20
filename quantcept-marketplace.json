@@ -1,0 +1,21 @@
+{
+  "name": "chartix",
+  "owner": {
+    "name": "Srikrishna Singh",
+    "url": "https://chartixai.com"
+  },
+  "description": "ChartixAI plugins for Quantcept — NSE equity price action: OHLCV bars, detected chart patterns with Chartix's own backtested win rates, screener runs, watchlists and alerts.",
+  "plugins": [
+    {
+      "name": "chartix",
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/singhsrikrishna3-afk/chartix-mcp.git",
+        "path": "quantcept-plugin"
+      },
+      "description": "NSE price action from ChartixAI as nine MCP tools, plus a skill on keeping Chartix and Quantcept attribution apart. Needs a Chartix login JWT in CHARTIX_TOKEN.",
+      "category": "data",
+      "tags": ["mcp", "nse", "india", "equities", "charts", "patterns", "screener"]
+    }
+  ]
+}

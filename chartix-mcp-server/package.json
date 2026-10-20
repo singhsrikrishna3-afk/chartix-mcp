@@ -1,0 +1,66 @@
+{
+  "name": "chartix-mcp-server",
+  "version": "0.2.0",
+  "description": "MCP server for ChartixAI \u2014 NSE equity bars, detected chart patterns with backtested win rates, screeners, watchlists and alerts.",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "bin": {
+    "chartix-mcp-server": "dist/http.js",
+    "chartix-mcp-stdio": "dist/stdio.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/http.js",
+    "dev": "node --experimental-strip-types src/http.ts",
+    "test": "npm run build && node --test test/*.test.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test:only": "node --test test/*.test.ts",
+    "start:stdio": "node dist/stdio.js",
+    "bundle": "npm run build && esbuild dist/stdio.js --bundle --platform=node --format=esm --target=node20 --legal-comments=none --outfile=../quantcept-plugin/mcp/chartix-server.mjs && cp ../quantcept/chartix-quantcept-bridge/SKILL.md ../quantcept-plugin/skills/chartix-quantcept-bridge/SKILL.md",
+    "prepublishOnly": "npm run build && npm test"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "zod": "^3.23.8",
+    "zod-to-json-schema": "^3.25.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "esbuild": "^0.28.2",
+    "typescript": "^5.6.0"
+  },
+  "license": "Apache-2.0",
+  "mcpName": "io.github.singhsrikrishna3-afk/chartix",
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "nse",
+    "india",
+    "equities",
+    "stocks",
+    "charts",
+    "patterns",
+    "screener",
+    "finance"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/singhsrikrishna3-afk/chartix-mcp.git",
+    "directory": "chartix-mcp-server"
+  },
+  "homepage": "https://chartixai.com",
+  "bugs": {
+    "url": "https://github.com/singhsrikrishna3-afk/chartix-mcp/issues"
+  },
+  "files": [
+    "dist",
+    "config",
+    "README.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}
