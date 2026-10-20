@@ -13,35 +13,61 @@ quantcept/            the attribution skill, and a website-connector template
 
 ## Install
 
-Any MCP client that spawns a stdio server:
+### Quantcept
 
-```json
-{
-  "mcpServers": {
-    "chartix": {
-      "command": "npx",
-      "args": ["-y", "chartix-mcp-server", "stdio"],
-      "env": { "CHARTIX_TOKEN": "<your Chartix JWT>" }
-    }
-  }
-}
+Install the Quantcept terminal first — `quantcept` is its CLI, not a shell
+builtin, and without it both commands below are `command not found`:
+
+```bash
+npm install -g quantcept
+quantcept                 # sign in with your Quantcept account email
 ```
 
-For Quantcept:
+Then:
 
 ```bash
 quantcept plugin marketplace add github:singhsrikrishna3-afk/chartix-mcp
 quantcept plugin install chartix@chartix
 ```
 
-That works the day this repo is public — Quantcept lets you add any
-marketplace, so it does not wait on the official one. Once the entry in
-`MARKETPLACE-ENTRY.json` is merged into
+Quantcept lets you add any marketplace, so this does not wait on the official
+one. Once the entry in `MARKETPLACE-ENTRY.json` is merged into
 `Fincept-Corporation/quantcept-marketplace`, `chartix@quantcept-marketplace`
-works too, from the marketplace Quantcept ships with.
+works too, from the marketplace Quantcept ships with. Set the credential
+(below), then restart the terminal. `quantcept plugin validate` checks a
+plugin directory and exits non-zero on failure.
 
-Then set the credential (see below) and restart the terminal. `quantcept
-plugin validate` checks a plugin directory and exits non-zero on failure.
+### Any other MCP client
+
+Claude Desktop, Claude Code, Cursor, Windsurf, Cline, Continue, Zed — anything
+that spawns a stdio MCP server. Build it once:
+
+```bash
+git clone https://github.com/singhsrikrishna3-afk/chartix-mcp.git
+cd chartix-mcp/chartix-mcp-server && npm ci && npm run build
+```
+
+then point the client at the built entry point:
+
+```json
+{
+  "mcpServers": {
+    "chartix": {
+      "command": "node",
+      "args": ["/absolute/path/to/chartix-mcp/chartix-mcp-server/dist/stdio.js"],
+      "env": { "CHARTIX_TOKEN": "<your Chartix JWT>" }
+    }
+  }
+}
+```
+
+> **Not on npm yet.** Once `chartix-mcp-server` is published, the above
+> collapses to `"command": "npx", "args": ["-y", "chartix-mcp-server"]` with no
+> clone and no build step. Until then the clone is the install.
+
+Building needs Node 22.18+ (the test suite runs TypeScript directly). The
+built server itself runs on Node 20 and up, which CI proves on every push.
+
 
 ## You need a Chartix credential
 

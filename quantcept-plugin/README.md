@@ -14,6 +14,16 @@ skills/chartix-quantcept-bridge/SKILL.md   attribution discipline
 
 Add the marketplace, then the plugin:
 
+Install the Quantcept terminal first — `quantcept` is its CLI, not a shell
+builtin, and without it both commands below are `command not found`:
+
+```bash
+npm install -g quantcept
+quantcept                 # sign in with your Quantcept account email
+```
+
+Then:
+
 ```bash
 quantcept plugin marketplace add github:singhsrikrishna3-afk/chartix-mcp
 quantcept plugin install chartix@chartix
