@@ -2,15 +2,27 @@ name: ci
 on:
   push: { branches: [main] }
   pull_request:
+
 jobs:
+  # The test suite runs TypeScript directly (`node --test test/*.test.ts`),
+  # which needs Node's native type stripping — unflagged from 22.18. The first
+  # CI run pinned Node 20 and died with ERR_UNKNOWN_FILE_EXTENSION ".ts"
+  # before a single test executed.
   test:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ['22', '24']
     defaults:
       run: { working-directory: chartix-mcp-server }
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with: { node-version: '20', cache: npm, cache-dependency-path: chartix-mcp-server/package-lock.json }
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+          cache-dependency-path: chartix-mcp-server/package-lock.json
       - run: npm ci
       - run: npm run typecheck
       - run: npm test
@@ -20,3 +32,26 @@ jobs:
       - run: npm run bundle
       - name: the committed bundle must match a fresh build
         run: git diff --exit-code -- ../quantcept-plugin
+
+  # package.json promises engines >=20, and the PUBLISHED package is compiled
+  # JS, so that promise is about dist/ — not about the TypeScript tests. Prove
+  # it rather than assert it: build, then run the real binary on Node 20 and
+  # make it answer a protocol frame.
+  supported-node-floor:
+    runs-on: ubuntu-latest
+    defaults:
+      run: { working-directory: chartix-mcp-server }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: chartix-mcp-server/package-lock.json
+      - run: npm ci
+      - run: npm run build
+      - name: the built server starts and answers on the oldest supported Node
+        run: |
+          printf '%s\n' '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"ci","version":"0"}}}' \
+            | CHARTIX_TOKEN=ci-probe node dist/stdio.js 2>/dev/null | tee /tmp/out.json
+          grep -q '"serverInfo"' /tmp/out.json

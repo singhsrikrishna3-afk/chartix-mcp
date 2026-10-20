@@ -61,8 +61,7 @@ export const ENDPOINTS = {
       "this route, so no prefix reached it while the web UI paywalled it on " +
       "the client only. TIER_PROTECTED_PATTERNS now matches segment-wise. " +
       "chartix_get_bars still defaults to daily and makes intraday an " +
-      "explicit argument, which is " +
-      "chartix_get_bars defaults to daily and makes intraday an explicit ask.",
+      "explicit argument, which remains the right default for an agent.",
   },
   holidays: { path: "/api/instruments/holidays", tier: "free" },
 

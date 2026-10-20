@@ -20756,8 +20756,8 @@ var ENDPOINTS = {
   eod: { path: "/api/instruments/{symbol}/eod", tier: "free" },
   intraday: {
     path: "/api/instruments/{symbol}/intraday",
-    tier: "free",
-    note: "Ungated SERVER-side: the handler depends only on get_current_user. The Chartix web UI paywalls intraday on the client, so any logged-in free account can already pull it straight from the API. That is a pre-existing gap in Chartix, not something this server introduces \u2014 but an MCP tool makes it trivially scriptable, which is why chartix_get_bars defaults to daily and makes intraday an explicit ask."
+    tier: "eod_pro",
+    note: "Gated server-side at eod_pro since 381f224 (verified: a free or eod_basic account is refused). It had been ungated, because the tier middleware matched path PREFIXES and the symbol sits in the middle of this route, so no prefix reached it while the web UI paywalled it on the client only. TIER_PROTECTED_PATTERNS now matches segment-wise. chartix_get_bars still defaults to daily and makes intraday an explicit argument, which remains the right default for an agent."
   },
   holidays: { path: "/api/instruments/holidays", tier: "free" },
   patterns: {
